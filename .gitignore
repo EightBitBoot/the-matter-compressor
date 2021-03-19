@@ -1,2 +1,7 @@
 # We don't need the output of the tests
-output/*
+output/**/*.mp4
+output/**/*.mkv
+crf_tests/*.mp4
+
+# Don't need no pycace
+__pycache__
