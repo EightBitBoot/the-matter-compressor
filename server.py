@@ -46,7 +46,8 @@ def start_encode():
 
 @app.route("/", methods=["GET"])
 def index_route():
-    return "Oh hai mark!"
+    with open("index.html") as index_file:
+        return "\n".join(index_file.readlines())
 
 
 @app.route("/encode", methods=["GET", "POST"])
