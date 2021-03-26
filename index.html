@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Long Bread</title>
-        <script type="text/script" src="/scripts/encode.js"> </script>
-        <link rel="stylesheet" type="text/css" href="/styles/style.css" />
+        <title>What's The Matter Compressor</title>
+
+        <script type="text/javascript" src="/scripts/jquery-3.6.0.js"></script>
+        <script type="text/javascript" src="/scripts/compress.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="/css/style.css" />
     </head>
 
     <body>
-        Oh hi hello
+
+        <h1 class="centered">Existential Compression</h1>
+        <h4 class="centered" id="times_compressed"></h4>
+
+        <video class="centered" id="movie" controls loop>
+            <source src="/media/movie.mp4" type="video/mp4" />
+
+            Ruh roe Raggy
+        </video>
+
+
+        <button class="centered" id="compressButton" type="button" onclick="compress()">Compress Me</button>
     </body>
 </html>

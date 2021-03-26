@@ -1,7 +1,39 @@
-html, body {
+body {
     background-color: black;
+    color: white;
+
+    max-height: 100vh;
 }
 
-body {
-    color: white;
+.centered {
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    text-align: center;
+
+    margin: auto;
+
+    display: block;
+}
+
+#movie {
+    width: 90%;
+}
+
+#compressButton {
+    color: var(--color);
+    transition: 0.25s; 
+
+    background: none;
+    border: 2px solid;
+    font: inherit;
+    line-height: 1;
+    margin: 0.5em;
+    padding: 1em 2em;
+}
+
+#compressButton:hover,
+#compressButton:focus {
+    box-shadow: 0 0.5em 0.5em -0.4em var(--hover);
+    transform: translateY(-0.25em);
 }

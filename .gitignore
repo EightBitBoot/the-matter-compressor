@@ -8,3 +8,7 @@ __pycache__
 
 # Come on vs code who do you think you are
 .vscode/
+
+# Shouldn't bog down the repo with a huge movie
+static/media/*
+!static/media/.keepdir
