@@ -1,4 +1,5 @@
 body {
+    /* background-color: hsl(227, 10%, 10%); */
     background-color: black;
     color: white;
 
@@ -17,11 +18,19 @@ body {
 }
 
 #movie {
-    width: 90%;
+    width: 100%;
 }
 
-#compressButton {
-    color: var(--color);
+#movieContainer {
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+
+    max-width: 90%;
+}
+
+/* #compressButton {
+    color: rgb(255, 0, 0);
+    border-color: rgb(255, 0, 0);
     transition: 0.25s; 
 
     background: none;
@@ -32,8 +41,9 @@ body {
     padding: 1em 2em;
 }
 
-#compressButton:hover,
-#compressButton:focus {
-    box-shadow: 0 0.5em 0.5em -0.4em var(--hover);
+#compressButton:hover:enabled,
+#compressButton:focus:enabled {
+    border-color: white;
+    box-shadow: 0 0.5em 0.5em -0.4em rgb(255, 255, 255);
     transform: translateY(-0.25em);
-}
+} */
