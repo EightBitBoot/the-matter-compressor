@@ -1,0 +1,6 @@
+Requirements:
+
+* nginx
+* python3
+* pip  
+* python3-venv

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-FLASK_APP=server.py flask run
+source .env/bin/activate && gunicorn server:app &

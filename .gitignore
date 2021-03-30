@@ -12,3 +12,13 @@ __pycache__
 # Shouldn't bog down the repo with a huge movie
 static/media/*
 !static/media/.keepdir
+
+# Real lumberjacks don't keep logs
+gunicorn_log/*
+!gunicorn_log/.keepdir
+
+# Global warming's gonna kill the environment anyway
+.env/
+
+# Oooo look at me I'm github I can't handle files over 100MB
+finalbase.mp4
