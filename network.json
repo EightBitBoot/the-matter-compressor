@@ -1,4 +1,5 @@
 {
     "redis-addr": "<REDIS SERVER ADDRESS>",
-    "redis-auth": "<REDIS PASSWORD>"
+    "redis-port": "<REDIS SERVER PORT>",
+    "redis-pass": "<REDIS PASSWORD>"
 }
