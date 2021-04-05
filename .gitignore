@@ -3,7 +3,7 @@ testing/output/**/*.mp4
 testing/output/**/*.mkv
 testing/crf_tests/*.mp4
 
-# Don't need no pycace
+# Cache smache
 __pycache__
 
 # Come on vs code who do you think you are

@@ -1,55 +1,68 @@
+from gevent import monkey
+monkey.patch_all() # Patch blocking functions
+
 import os
 import time
+import json
 import random
 import subprocess
-from threading import Thread, Lock
+from threading import Thread
 
 from flask import Flask
 from flask import request, jsonify
+
+import redis
+import redlock
 
 CRF_MIN = 29
 CRF_MAX = 31
 
 class CompressionState:
-    def __init__(self) -> None:
-        self._is_compressing        = False  # DO NOT ACCESS THIS WITHOUT USING THE LOCK
-        self._is_compressing_lock   = Lock()
-        self._num_compressions      = 0      # DO NOT ACCESS THIS WITHOUT USING THE LOCK
-        self._num_compressions_lock = Lock()
+    def __init__(self, redis_server_info) -> None:
+        self._redis_client = redis.Redis(host=redis_server_info["redis_addr"], port=redis_server_info["redis_port"], password=redis_server_info["redis_pass"])
+        lock_factory = redlock.RedLockFactory([self._redis_client])
+        self._num_compressions_lock = lock_factory.create_lock("num_compressions_lock")
+        self._is_compressing_lock = lock_factory.create_lock("is_compressing_lock")
+
+    def _perform_action_in_lock(self, lock, action): 
+        lock_success = lock.acquire()
+        while not lock_success:
+            time.sleep(random.randint(1, 5) / 1000)
+            lock_success = lock.acquire()
+
+        result = action()
+
+        lock.release() 
+
+        return result
 
     def is_compressing(self) -> bool:
-        result = True # A false negative is more harmful than a false positive
+        raw_result = self._perform_action_in_lock(self._is_compressing_lock, lambda: self._redis_client.get("is_compressing"))
 
-        self._is_compressing_lock.acquire()
-        result = self._is_compressing
-        self._is_compressing_lock.release()
-
-        return result
+        return bool(int(raw_result))
 
     def set_is_compressing(self, new_state: bool) -> None:
-        self._is_compressing_lock.acquire()
-        self._is_compressing = new_state
-        self._is_compressing_lock.release()
-
-        if new_state == True: # For clarity
-            # is_compressing is changing from false to true marking a new round
-            # of compression: increment the number of compressions
-            self._num_compressions_lock.acquire()
-            self._num_compressions += 1
-            self._num_compressions_lock.release()
+        self._perform_action_in_lock(self._is_compressing_lock, lambda: self._redis_client.set("is_compressing", int(new_state)))
 
     def get_num_compressions(self) -> int:
-        result = 0
+        result = self._perform_action_in_lock(self._num_compressions_lock, lambda: self._redis_client.get("num_compressions"))
 
-        self._num_compressions_lock.acquire()
-        result = self._num_compressions
-        self._num_compressions_lock.release()
+        return int(result)
+        
+    def increment_num_compressions(self) -> None:
+        self._perform_action_in_lock(self._num_compressions_lock, lambda: self._redis_client.incr("num_compressions"))
 
-        return result
 
-
+# --------------- INITIALIZATION CODE --------------- 
+# Not sure a better place to put this with flask
 app = Flask("TheMatterCompressor")
-compression_state = CompressionState()
+
+network_info = None
+with open("network.json") as network_file:
+    network_info = json.loads("".join([s.strip() for s in network_file.readlines()]))
+
+compression_state = CompressionState(network_info)
+
 
 def perform_compression():
     global compression_state
@@ -64,6 +77,7 @@ def perform_compression():
 
     print("[{}] Done compressing".format(time.ctime()))
     compression_state.set_is_compressing(False)
+    compression_state.increment_num_compressions()
 
 
 def start_compression():

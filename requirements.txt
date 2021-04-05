@@ -1,4 +1,10 @@
+# Why reinvent it?
+wheel
+
+# Webserver related dependencies
 flask
 gunicorn[gevent]
 
+# Redis shtuff
 redis
+redlock
