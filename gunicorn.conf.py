@@ -1,9 +1,18 @@
+import os
 import time
 import json
 
 import redis
 
 # --------------------- Setup ---------------------
+def on_starting_callback(server):
+    if os.path.exists("gunicorn.pid"):
+        os.remove("gunicorn.pid")
+
+    with open("gunicorn.pid", "w+") as pid_file:
+        pid_file.write(str(os.getpid()))
+
+
 def when_ready_callback(server):
     network_info = None
     with open("network.json") as network_file:
@@ -14,10 +23,17 @@ def when_ready_callback(server):
     redis_client.set("num_compressions", 0, nx=True)
 
 
+def on_exit_callback(server):
+    if os.path.exists("gunicorn.pid"):
+        os.remove("gunicorn.pid")    
+
+
 time_str = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
 
 # --------------------- Actual Config ---------------------
+on_starting = on_starting_callback
 when_ready = when_ready_callback
+on_exit = on_exit_callback
 
 accesslog = "gunicorn_log/{}_gunicorn.access.log".format(time_str)
 errorlog = "gunicorn_log/{}_gunicorn.log".format(time_str)

@@ -3,7 +3,9 @@ wheel
 
 # Webserver related dependencies
 flask
+flask-sse
 gunicorn[gevent]
+celery
 
 # Redis shtuff
 redis

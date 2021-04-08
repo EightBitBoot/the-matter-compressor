@@ -1,25 +1,38 @@
 // TODO(Adin): Remove all logging in production
 
-function compressionDoneCallback(data) {
-    console.log("Compression success: " + data.success);
-
-    if(data.success) {
-        $("#compressButton").prop("disabled", true);
-    }
-}
-
-function compress() {
-    $.post("/compress", compressionDoneCallback, "json");
-}
-
-function onLoad() {
+function updatePage() {
     $.get("/compress", function(data) {
-        $("#times_compressed").html("Compressed " + data.num_compressions + " Times");
-
+        console.log("updatePage: " + data.is_compressing + ", " + data.num_compressions)
         if(data.is_compressing) {
             $("#compressButton").prop("disabled", true);
         }
+        else {
+            $("#compressButton").prop("disabled", false);
+        }
+
+        $("#times_compressed").html("Compressed " + data.num_compressions + " Times");
     }, "json");
 }
 
-onLoad();
+function compress() {
+    $.post("/compress", null, "json");
+    updatePage();
+}
+
+eventSource = new EventSource("/events");
+eventSource.addEventListener("keep_alive", function(event) {
+    console.log(event);
+});
+
+eventSource.addEventListener("compress", function(event) {
+    console.log(event);
+    updatePage();
+});
+
+eventSource.onerror = function() {
+    console.log("EventSource failed.");
+};
+
+window.onload = function() {
+    updatePage();
+}

@@ -8,8 +8,12 @@ import random
 import subprocess
 from threading import Thread
 
-from flask import Flask
+from flask import Flask, url_for
 from flask import request, jsonify
+
+from celery import Celery
+
+from flask_sse import sse
 
 import redis
 import redlock
@@ -18,8 +22,8 @@ CRF_MIN = 29
 CRF_MAX = 31
 
 class CompressionState:
-    def __init__(self, redis_server_info) -> None:
-        self._redis_client = redis.Redis(host=redis_server_info["redis_addr"], port=redis_server_info["redis_port"], password=redis_server_info["redis_pass"])
+    def __init__(self, redis_url) -> None:
+        self._redis_client = redis.from_url(redis_url)
         lock_factory = redlock.RedLockFactory([self._redis_client])
         self._num_compressions_lock = lock_factory.create_lock("num_compressions_lock")
         self._is_compressing_lock = lock_factory.create_lock("is_compressing_lock")
@@ -53,6 +57,19 @@ class CompressionState:
         self._perform_action_in_lock(self._num_compressions_lock, lambda: self._redis_client.incr("num_compressions"))
 
 
+def make_celery(app):
+    celery = Celery(app.import_name, backend=app.config["result_backend"], broker=app.config["CELERY_BROKER_URL"])
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+
 # --------------- INITIALIZATION CODE --------------- 
 # Not sure a better place to put this with flask
 app = Flask("TheMatterCompressor")
@@ -61,9 +78,30 @@ network_info = None
 with open("network.json") as network_file:
     network_info = json.loads("".join([s.strip() for s in network_file.readlines()]))
 
-compression_state = CompressionState(network_info)
+app.config["REDIS_URL"] = "redis://:{}@{}:{}".format(network_info["redis_pass"], network_info["redis_addr"], network_info["redis_port"]) # For flask-sse
+compression_state = CompressionState(app.config["REDIS_URL"])
+
+app.config.update(CELERY_BROKER_URL=app.config["REDIS_URL"], result_backend=app.config["REDIS_URL"])
+celery = make_celery(app)
+
+app.register_blueprint(sse, url_prefix="/events")
 
 
+@celery.task
+def publish_keep_alive():
+    sse.publish({"message": "keep_alive"}, type="keep_alive")
+    print("Sent keep_alive")
+
+celery.conf.beat_schedule = {
+    "keep-alive-every-30-seconds": {
+        "task": "server.publish_keep_alive",
+        "schedule": 30.0,
+        "args": None
+    },
+}
+
+
+@celery.task
 def perform_compression():
     global compression_state
 
@@ -72,12 +110,17 @@ def perform_compression():
 
     compression_state.set_is_compressing(True)
     print("[{}] Starting compression: CRF {}".format(time.ctime(), crf))
+    with app.app_context():
+        sse.publish({"message": "oh hello mario"}, type="compress")
 
     subprocess.run(["bash", "-c", "./compress.sh {} {}".format(compression_state.get_num_compressions(), crf)])
 
     print("[{}] Done compressing".format(time.ctime()))
     compression_state.set_is_compressing(False)
     compression_state.increment_num_compressions()
+
+    with app.app_context():
+        sse.publish({"message": "oh goodbye mario"}, type="compress")
 
 
 def start_compression():
@@ -104,7 +147,7 @@ def compress_route():
         result = {"success": False}
 
         if not compression_state.is_compressing():
-            start_compression()
+            perform_compression.delay()
             result["success"] = True
         else:
             result["success"] = False

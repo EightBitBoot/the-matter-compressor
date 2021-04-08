@@ -22,3 +22,5 @@ gunicorn_log/*
 
 # Oooo look at me I'm github I can't handle files over 100MB
 finalbase.mp4
+
+celerybeat-schedule
