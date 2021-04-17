@@ -83,6 +83,8 @@ def make_celery(app):
 # Not sure a better place to put this with flask
 app = Flask("TheMatterCompressor")
 
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
 network_info = None
 with open("network.json") as network_file:
     network_info = json.loads("".join([s.strip() for s in network_file.readlines()]))
@@ -144,7 +146,10 @@ def compress_route():
     if request.method == "GET":
         result["num_compressions"] = redis_interface.get_num_compressions()
         result["is_compressing"] = redis_interface.is_compressing()
-        result["can_compress"] = redis_interface.can_fingerprint_compress(request.cookies.get("browser_fingerprint"))
+        if request.cookies.get("browser_fingerprint") is not None: # Safety
+            result["can_compress"] = redis_interface.can_fingerprint_compress(request.cookies.get("browser_fingerprint"))
+        else:
+            result["can_compress"] = False
 
     if request.method == "POST":
         result = {}

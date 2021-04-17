@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        
         <title>What's The Matter Compressor</title>
         
         <script src="//cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
         <script type="text/javascript" src="/scripts/jquery-3.6.0.js"></script>
         <script type="text/javascript" src="/scripts/compress.js"></script>
 
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=New%20Tegomin">
         <link rel="stylesheet" type="text/css" href="/css/style.css" />
     </head>
 
     <body>
 
-        <h1 class="centered">Existential Compression</h1>
-        <h4 class="centered" id="timesCompressed"></h4>
+        <h1 class="noMargins" id="title">Existential Compression</h1>
+        <h4 class="noMargins" id="timesCompressed"></h4>
 
-        <span class="centered" id="movieContainer">
-            <video class="centered" id="movie" controls loop>
+        <span id="movieContainer">
+            <video id="movie" controls loop>
                 <source id="movieSource" src="/media/movie.mp4?t={{ time.time_ns() // 1000000 }}" type="video/mp4" />
 
                 Ruh roe Raggy
@@ -24,8 +27,8 @@
         </span>
 
 
-        <span class="centered" id="compressionMessage"></span>
+        <span id="compressionMessage"></span>
         <!--Start the button disabled becasue the first update happens asynchronously-->
-        <button class="centered" id="compressButton" type="button" onclick="compress()" disabled>Compress Me</button>
+        <button id="compressionButton" type="button" onclick="compress()" disabled>Compress Me</button>
     </body>
 </html>

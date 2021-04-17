@@ -16,9 +16,9 @@ function updatePage(fromMessage) {
         }
         else if(!data.can_compress) {
             disableButton = true;
-            $("#compressionMessage").html("You already compressed the movie");
+            $("#compressionMessage").html("You have already compressed the movie");
         }
-        $("#compressButton").prop("disabled", disableButton);
+        $("#compressionButton").prop("disabled", disableButton);
 
         $("#timesCompressed").html("Compressed " + data.num_compressions + (data.num_compressions == 1 ? " Time" : " Times"));
 

@@ -1,49 +1,65 @@
 body {
     /* background-color: hsl(227, 10%, 10%); */
-    background-color: black;
+    background-color: rgb(06, 04, 07);
     color: white;
 
-    max-height: 100vh;
-}
-
-.centered {
-    justify-content: center;
-    align-content: center;
-    align-items: center;
     text-align: center;
+    font-family: "New Tegomin";
+    font-size: larger;
 
-    margin: auto;
+    overflow: auto;
 
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 0;
+    margin: 0;
+
+    /* max-height: 100%; */
 }
 
-#movie {
-    width: 100%;
+.noMargins {
+    margin:  0;
+    padding: 0;
 }
 
 #movieContainer {
-    margin-top: 10vh;
-    margin-bottom: 10vh;
+    margin-top: 20px;
+    margin-bottom: 5px;
 
-    max-width: 90%;
 }
 
-/* #compressButton {
-    color: rgb(255, 0, 0);
-    border-color: rgb(255, 0, 0);
-    transition: 0.25s; 
-
-    background: none;
-    border: 2px solid;
-    font: inherit;
-    line-height: 1;
-    margin: 0.5em;
-    padding: 1em 2em;
+#movie {
+    width: auto;
+    max-height: 80vh;
 }
 
-#compressButton:hover:enabled,
-#compressButton:focus:enabled {
-    border-color: white;
-    box-shadow: 0 0.5em 0.5em -0.4em rgb(255, 255, 255);
-    transform: translateY(-0.25em);
-} */
+#compressionMessage {
+    margin-bottom: 5px;
+}
+
+#compressionButton {
+    fill: none;
+    background-color: rgb(06, 04, 07);
+    border-width: 2px;
+
+    font-family: "New Tegomin";
+
+    padding: 4px;
+}
+
+#compressionButton:enabled {
+    color: rgb(220, 220, 220);
+    border-color: rgb(220, 220, 220);
+}
+
+#compressionButton:hover:enabled {
+    color: rgb(255, 255, 255);
+    border-color: rgb(255, 255, 255);
+}
+
+#compressionButton:disabled {
+    color: rgb(155, 155, 155);
+    border-color: rgb(155, 155, 155);
+}
