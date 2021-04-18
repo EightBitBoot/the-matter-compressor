@@ -1,21 +1,25 @@
-Reqs:
+Deps:
     - supervisor
     - nginx
     - ffmpeg
     - python3
-    - pip3
+    - python3-pip
     - python3-venv
 
 
-Supervisor requires a user named www-data
+Production requires a user named www-data (made by nginx)
+Development requires a user named adin
 
-1.  Install requirements (python and pip are probably already installed)
-2.  Clone repo into /home/adin/myles for development or /opt/mattercompressor for 
+1.  Clone repo into /home/adin/myles for development or /opt/mattercompressor for production
+2.  Install dependencies
 3.  Run after_clone.sh
 4.  Copy the movie into static/media and name it movie.mp4
-5.  Run "pip3 install -r requirements.txt"
-6.  Move /etc/nginx/nginx.conf to /etc/nginx/nginx.conf.def
-7.  Move /etc/supervisor/supervisord.conf to /etc/supervisor/supervisord.conf.def
-8.  Copy config files from config/ to their respective locations
-9.  run "sudo nginx -s reload"
-10. run "supervisorctl update"
+5.  Move /etc/nginx/nginx.conf to /etc/nginx/nginx.conf.def
+6.  Move /etc/supervisor/supervisord.conf to /etc/supervisor/supervisord.conf.def
+7.  Copy config files from config/ to their respective locations
+8.  Run "sudo nginx -s reload"
+9.  Run "supervisorctl reload"
+10. Start redis either locally or on another machine
+11. Fill out network.json with redis server information
+12. Run "chown -R <username>:<username> ../mattercompressor" where <username> is either www-data or adin based on production vs development
+12. Start compressor:* programs with supervisorctl
