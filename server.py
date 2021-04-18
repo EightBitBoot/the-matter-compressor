@@ -101,7 +101,6 @@ app.register_blueprint(sse, url_prefix="/events")
 @celery.task
 def publish_keep_alive():
     sse.publish({"message": "keep_alive"}, type="keep_alive")
-    print("Sent keep_alive")
 
 celery.conf.beat_schedule = {
     "keep-alive-every-30-seconds": {

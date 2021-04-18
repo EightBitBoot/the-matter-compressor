@@ -7,14 +7,15 @@ Reqs:
     - python3-venv
 
 
-Supervisor requires a user named 
+Supervisor requires a user named www-data
 
-1. Install requirements (python and pip are probably already installed)
-2. Clone repo into /home/adin/myles for development or /opt/mattercompressor for 
-3. Run after_clone.sh
-4. Run "pip3 install -r requirements.txt"
-5. Move /etc/nginx/nginx.conf to /etc/nginx/nginx.conf.def
-6. Move /etc/supervisor/supervisord.conf to /etc/supervisor/supervisord.conf.def
-5. Copy config files from config/ to their respective locations
-6. run "sudo nginx -s reload"
-7. run "supervisorctl update"
+1.  Install requirements (python and pip are probably already installed)
+2.  Clone repo into /home/adin/myles for development or /opt/mattercompressor for 
+3.  Run after_clone.sh
+4.  Copy the movie into static/media and name it movie.mp4
+5.  Run "pip3 install -r requirements.txt"
+6.  Move /etc/nginx/nginx.conf to /etc/nginx/nginx.conf.def
+7.  Move /etc/supervisor/supervisord.conf to /etc/supervisor/supervisord.conf.def
+8.  Copy config files from config/ to their respective locations
+9.  run "sudo nginx -s reload"
+10. run "supervisorctl update"

@@ -1,14 +1,12 @@
 // TODO(Adin): Remove all logging in production
 // TODO(Adin): Remove keep_alive event callback
 
-// Previous compression state before updaatePage()
+// Previous compression state before updatePage()
 var previousCompressionState = false;
 var eventSource;
 
 function updatePage(fromMessage) {
     $.get("/compress", function(data) {
-        console.log("updatePage: " + data.is_compressing + ", " + data.num_compressions)
-
         disableButton = false;
         if(data.is_compressing) {
             disableButton = true;
@@ -36,21 +34,11 @@ function compress() {
 }
 
 function initEventSource() {
-    console.log("initEventSource()");
     eventSource = new EventSource("/events");
 
-    eventSource.addEventListener("keep_alive", function(event) {
-        console.log(event);
-    });
-
     eventSource.addEventListener("compress", function(event) {
-        console.log(event);
         updatePage(true);
     });
-
-    eventSource.onerror = function() {
-        console.log("EventSource failed.");
-    };
 }
 
 function onVisibilityChange() {
@@ -75,7 +63,6 @@ function initFingerprintAndUpdate() {
             // This is the visitor identifier:
             const browser_fingerprint = result.visitorId;
             if(!document.cookie.includes("browser_fingerprint")) {
-                console.log("browser_fingerprint=" + browser_fingerprint);
                 document.cookie = "browser_fingerprint=" + browser_fingerprint + ";SameSite=strict";
             }
 
